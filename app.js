@@ -4,30 +4,36 @@ const app = express();
 
 
 app.use((request, response, next) => {
-    response.write("1");
+    console.log(1);
     next();
 });
 
 app.use((request, response, next) => {
-    response.write("2");
+    console.log(2);
+
     if (true) {
-        next('出错了');
+        next("出错了");
+    } else {
+        next();
     }
-    next();
 });
 
 app.use((request, response, next) => {
-    response.write("3");
+    console.log(3);
+
     next();
 });
 
 // 错误处理函数
-app.use((error, request, response, next) =>{
-    response.write(error)
-    response.end()
-    next()
+app.use((error, request, response, next) => {
+    if (response.headersSent) {
+        return next(error);
+    }
+    response.status(500);
+    response.send(error);
 });
 
-app.listen(3000);
-console.log("listen 3000");
+app.listen(3000, () => {
+    console.log("listen 3000");
+});
 
